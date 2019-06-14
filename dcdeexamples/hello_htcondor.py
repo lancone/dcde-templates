@@ -19,7 +19,7 @@ config = Config(
                 init_blocks=1,
                 max_blocks=1,
                 scheduler_options='accounting_group = group_sdcc.main',
-                worker_init='',     # Input your worker_init if needed
+                worker_init='',   # Input your worker_init if needed
                 requirements='',  
             ),
             engine_debug_level='DEBUG',
