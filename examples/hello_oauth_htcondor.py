@@ -4,6 +4,7 @@
 # DOES NOT WORK WITH GSISSH yet. no port. Uses paramiko
 #
 import logging
+import socket
 import parsl
 from parsl.executors.ipp_controller import Controller
 from parsl.channels.oauth_ssh.oauth_ssh import OAuthSSHChannel
@@ -14,10 +15,15 @@ from parsl.app.app import python_app, bash_app
 
 parsl.set_stream_logger()
 
+hostname = socket.gethostname()    
+ipaddress = socket.gethostbyname(hostname)    
+print(hostname)
+
 config = Config(
     executors=[
             HighThroughputExecutor(
-                    address='128.135.123.206',
+                    address=hostname,
+                    worker_port_range=(50000,51000),
                     label='condor_oauth_ssh',
                     worker_debug=True,
                     worker_logdir_root='/sdcc/u/dcde1000001/parsl_scripts/logs',
