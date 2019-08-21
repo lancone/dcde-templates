@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import logging
 import parsl
 from parsl.app.app import python_app, bash_app
