@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import logging
 import parsl
 from parsl.app.app import python_app, bash_app
 from parsl.executors.ipp_controller import Controller
@@ -12,27 +13,36 @@ from parsl.config import Config
 from parsl.executors import HighThroughputExecutor
 from dcdeparsl.configfactory import ConfigFactory
 
-
-
 @python_app
 def sdcc_wninfo():
     #import subprocess
     import os
     return os.uname()
 
+logging.basicConfig(format='%(asctime)s (UTC) [%(levelname)s] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s')
+logging.getLogger().setLevel(logging.DEBUG)
+
 #parsl.set_stream_logger(level=0)
 parsl.clear()
 
+logging.info("getting config for spce01, dcde1000001")
 cf = ConfigFactory()
-bnl_sdcc_condor = cf.getconfig(site='bnl', user='dcde1000001')
+bnl_sdcc_condor = cf.getconfig( 'spce01.sdcc.bnl.gov', 'dcde1000001')
+
+logging.info("loading config: %s" % bnl_sdcc_condor)
 
 parsl.load(bnl_sdcc_condor)
 
 #condorinfo = sdcc_wninfo(executors=['sdcc_condor'])
+logging.info("submitting...")
 condorinfo = sdcc_wninfo(stdout='relion_condor.out', stderr='relion_condor.err')
+
+logging.info("awaiting result....")
 
 # Must. wait. for. job. to. finish.
 condorinfo.result()
+
+logging.info("got result, printing...")
 
 with open (condorinfo.stdout, 'r') as f:
     print(condorinfo.read())
