@@ -67,7 +67,7 @@ if __name__ == '__main__':
     logging.info("getting configfactory with conffile: %s" %  args.conffile)
     cf = ConfigFactory(conffile=args.conffile)
     logging.info("getting config for spce01.sdcc.bnl.gov, dcde1000001")
-    bnl_sdcc_condor = cf.getconfig( args.endpoint, args.conffile)
+    bnl_sdcc_condor = cf.getconfig( args.endpoint, args.username)
     
     logging.info("loading config: %s" % bnl_sdcc_condor)
     
