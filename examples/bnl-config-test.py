@@ -18,6 +18,7 @@ from dcdeparsl.configfactory import ConfigFactory
 def sdcc_wninfo():
     #import subprocess
     import os
+    print( os.uname())
     return os.uname()
 
 if __name__ == '__main__':
