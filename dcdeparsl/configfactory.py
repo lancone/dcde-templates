@@ -101,6 +101,7 @@ class ConfigFactory(object):
                                 worker_port_range=(worker_port_range_low,worker_port_range_high),
                                 label='condor_oauth_ssh',
                                 worker_debug=True,
+                                max_workers = 1,
                                 worker_logdir_root='%s/%s/parsl_scripts/logs' % (homeroot, user),
                                 working_dir='%s/%s/parsl_scripts' % (homeroot, user),
                                 provider = myprovider,
