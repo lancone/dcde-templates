@@ -25,7 +25,7 @@ class ConfigFactory(object):
         self.config.read(self.conffile)
         self.clienthostname = socket.gethostname()
         try:
-            f = requests.request('GET', 'http://whatismyip.org')            
+            f = requests.request('GET', 'http://myip.dnsomatic.com')            
             self.external_ip = f.text
             # urllib2.urlopen('http://whatismyip.org').read()
         except:
