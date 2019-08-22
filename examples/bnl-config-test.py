@@ -76,7 +76,7 @@ if __name__ == '__main__':
     
     #condorinfo = sdcc_wninfo(executors=['sdcc_condor'])
     logging.info("submitting...")
-    condorinfo = sdcc_wninfo(stdout='relion_condor.out', stderr='relion_condor.err')
+    condorinfo = sdcc_wninfo()
     
     logging.info("awaiting result....")
     
