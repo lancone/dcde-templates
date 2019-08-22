@@ -94,7 +94,7 @@ class ConfigFactory(object):
         )
 
 
-    return config
+        return config
 
 
     def __str__(self):
