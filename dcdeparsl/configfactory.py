@@ -31,38 +31,42 @@ class ConfigFactory(object):
         '''
         Generate valid parsl Config object given endpoint and user. 
         '''
-        worker_port_range_low = self.config.get(endpoint, 'worker_port_range_low')
-        worker_port_range_high = self.config.get(endpoint, 'worker_port_range_high')
+        worker_port_range_low = int(self.config.get(endpoint, 'worker_port_range_low'))
+        worker_port_range_high = int(self.config.get(endpoint, 'worker_port_range_high'))
         homeroot = self.config.get(endpoint, 'homeroot')
         worker_init = self.config.get(endpoint, 'worker_init')
+        install_user = self.config.get(endpoint, 'install_user')
+        channel_port = int(self.config.get(endpoint, 'channel_port') )
+        scheduler_options = self.config.get(endpoint, 'scheduler_options')
         
         config = Config(
             executors=[
                         HighThroughputExecutor(
                                 address=self.clienthostname,
-                                worker_port_range=(50000,51000),
+                                worker_port_range=(worker_port_range_low,worker_port_range_high),
                                 label='condor_oauth_ssh',
                                 worker_debug=True,
-                                worker_logdir_root='/sdcc/u/dcde1000001/parsl_scripts/logs',
-                                working_dir='/sdcc/u/dcde1000001/parsl_scripts',
+                                worker_logdir_root='%s/%s/parsl_scripts/logs' % (homeroot, user),
+                                working_dir='%s/%s/parsl_scripts' % (homeroot, user),
                                 provider=CondorProvider(
                                         channel=OAuthSSHChannel(
                                                 hostname=endpoint,
-                                                port=2222,
-                                                username='dcde1000001',     # Please replace USERNAME with your username
-                                                script_dir='/sdcc/u/dcde1000001/parsl_scripts',    # Please replace USERNAME with your username
+                                                port=channel_port,
+                                                username=user,     # Please replace USERNAME with your username
+                                                script_dir='%s/%s/parsl_scripts'% (homeroot, user) ,    # Please replace USERNAME with your username
                                         ),
                                         #nodes_per_block=1,
                                         init_blocks=1,
                                         #max_blocks=4,
-                                        scheduler_options='accounting_group = group_sdcc.main',
-                                        worker_init='source ~/setup.sh',     # Input your worker_init if needed,
+                                        scheduler_options=scheduler_options,
+                                        worker_init=worker_init,     # Input your worker_init if needed,
                                 ),
                         )
                 ],
         )
         
         return config
+
 
     def __str__(self):
         return repr(self)
