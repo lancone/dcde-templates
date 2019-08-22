@@ -41,16 +41,26 @@ if __name__ == '__main__':
                         dest='endpoint', 
                         default="spce01.sdcc.bnl.gov",
                         help='remote submit host')
+
+    parser.add_argument('-v', '--verbose', 
+                        action="store_true", 
+                        dest='verbose', 
+                        help='verbose (info) logging')
+
     
     parser.add_argument('-d', '--debug', 
                         action="store_true", 
                         dest='debug', 
                         help='debug logging')
+    
     args = parser.parse_args()
 
     logging.basicConfig(format='%(asctime)s (UTC) [%(levelname)s] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s')
-    logging.getLogger().setLevel(logging.DEBUG)
-    
+    if args.debug:
+        logging.getLogger().setLevel(logging.DEBUG)
+    elif args.verbose:
+        logging.getLogger().setLevel(logging.INFO)
+       
     #parsl.set_stream_logger(level=0)
     parsl.clear()
     
