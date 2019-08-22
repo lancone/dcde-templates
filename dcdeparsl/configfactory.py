@@ -14,58 +14,87 @@ from parsl.providers.condor.condor import CondorProvider
 from parsl.config import Config
 from parsl.executors import HighThroughputExecutor
 from parsl.app.app import python_app, bash_app
-
+import urllib2
 
 class ConfigFactory(object):
 
     def __init__(self, conffile='/etc/dcde/dcdeparsl.conf'):
+        self.log = logging.getLogger()
         self.conffile = conffile
         self.config = configparser.ConfigParser()
         self.config.read(self.conffile)
-        self.clienthostname = socket.gethostname()            
+        self.clienthostname = socket.gethostname()
+        try:            
+            self.external_ip = urllib2.urlopen('http://whatismyip.org').read()
+        except:
+            self.log.warning("external ip lookup failed. ")
+        
         self.ipaddress = socket.gethostbyname(self.clienthostname)    
-        self.log = logging.getLogger()
+
         self.log.debug("ConfigFactory created.")
 
     def getconfig(self, endpoint, user):
         '''
         Generate valid parsl Config object given endpoint and user. 
         '''
-        worker_port_range_low = int(self.config.get(endpoint, 'worker_port_range_low'))
-        worker_port_range_high = int(self.config.get(endpoint, 'worker_port_range_high'))
+        worker_port_range_low = int(self.config.get('client', 'worker_port_range_low'))
+        worker_port_range_high = int(self.config.get('client', 'worker_port_range_high'))
         homeroot = self.config.get(endpoint, 'homeroot')
         worker_init = self.config.get(endpoint, 'worker_init')
         install_user = self.config.get(endpoint, 'install_user')
         channel_port = int(self.config.get(endpoint, 'channel_port') )
         scheduler_options = self.config.get(endpoint, 'scheduler_options')
+        batch = self.config.get(endpoint, 'batch')
         
+        config = None
+        myprovider = None
+        
+        mychannel=OAuthSSHChannel(
+            hostname=endpoint,
+            port=channel_port,
+            username=user,     # Please replace USERNAME with your username
+            script_dir='%s/%s/parsl_scripts'% (homeroot, user) ,    # Please replace USERNAME with your username
+        )
+
+        if batch == 'htcondor':
+            self.log.debug("batch type is %s" % batch)
+            myprovider=CondorProvider(
+                channel = mychannel,
+                #nodes_per_block=1,
+                init_blocks=1,
+                #max_blocks=4,
+                scheduler_options=scheduler_options,
+                worker_init=worker_init,     # Input your worker_init if needed,
+            )
+            
+        elif batch == 'slurm':
+            self.log.debug("batch type is %s" % batch)        
+            myprovider=SlurmProvider(
+                channel = mychannel,
+                #nodes_per_block=1,
+                init_blocks=1,
+                #max_blocks=4,
+                scheduler_options=scheduler_options,
+                worker_init=worker_init,     # Input your worker_init if needed,
+            )        
+        
+
         config = Config(
             executors=[
                         HighThroughputExecutor(
-                                address=self.clienthostname,
+                                address=self.external_ip,
                                 worker_port_range=(worker_port_range_low,worker_port_range_high),
                                 label='condor_oauth_ssh',
                                 worker_debug=True,
                                 worker_logdir_root='%s/%s/parsl_scripts/logs' % (homeroot, user),
                                 working_dir='%s/%s/parsl_scripts' % (homeroot, user),
-                                provider=CondorProvider(
-                                        channel=OAuthSSHChannel(
-                                                hostname=endpoint,
-                                                port=channel_port,
-                                                username=user,     # Please replace USERNAME with your username
-                                                script_dir='%s/%s/parsl_scripts'% (homeroot, user) ,    # Please replace USERNAME with your username
-                                        ),
-                                        #nodes_per_block=1,
-                                        init_blocks=1,
-                                        #max_blocks=4,
-                                        scheduler_options=scheduler_options,
-                                        worker_init=worker_init,     # Input your worker_init if needed,
-                                ),
+                                provider = myprovider,
                         )
                 ],
         )
-        
-        return config
+
+
+    return config
 
 
     def __str__(self):
