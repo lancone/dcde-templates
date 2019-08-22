@@ -15,10 +15,12 @@ from parsl.executors import HighThroughputExecutor
 from dcdeparsl.configfactory import ConfigFactory
 
 @python_app
-def sdcc_wninfo():
+def worker_info():
     #import subprocess
     import os
     return os.uname()
+
+
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s (UTC) [%(levelname)s] %(name)s %(filename)s:%(lineno)d %(funcName)s(): %(message)s')
@@ -72,17 +74,17 @@ if __name__ == '__main__':
     logging.info("loading config: %s" % bnl_sdcc_condor)
     
     parsl.load(bnl_sdcc_condor)
-    
-    #condorinfo = sdcc_wninfo(executors=['sdcc_condor'])
+
     logging.info("submitting...")
-    condorinfo = sdcc_wninfo()
+    sdcc_wninfo = worker_info()
     
     logging.info("awaiting result....")
     
     # Must. wait. for. job. to. finish.
-    condorinfo.result()
+    result = sdcc_wninfo().result()
+    print(result)
     
     logging.info("got result, printing...")
+
     
-    with open (condorinfo.stdout, 'r') as f:
-        print(condorinfo.read())
+
