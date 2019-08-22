@@ -3,14 +3,12 @@
 import argparse
 import logging
 import parsl
+
 from parsl.app.app import python_app, bash_app
 from parsl.executors.ipp_controller import Controller
-#from parsl.channels.ssh.ssh import SSHChannel
 from parsl.channels.local.local import LocalChannel
-#from parsl.providers.condor import condor
 from parsl.providers import CondorProvider
 from parsl.config import Config
-#from parsl.executors.ipp import IPyParallelExecutor
 from parsl.executors import HighThroughputExecutor
 from dcdeparsl.configfactory import ConfigFactory
 
@@ -62,6 +60,9 @@ if __name__ == '__main__':
         logging.getLogger().setLevel(logging.DEBUG)
     elif args.verbose:
         logging.getLogger().setLevel(logging.INFO)
+    else:
+        logging.getLogger().setLevel(logging.WARN)
+    
        
     #parsl.set_stream_logger(level=0)
     parsl.clear()

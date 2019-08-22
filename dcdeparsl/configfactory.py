@@ -99,7 +99,7 @@ class ConfigFactory(object):
                         HighThroughputExecutor(
                                 address=self.external_ip,
                                 worker_port_range=(worker_port_range_low,worker_port_range_high),
-                                label='condor_oauth_ssh',
+                                label='%s-%s' % (endpoint, batch),
                                 worker_debug=True,
                                 max_workers = 1,
                                 worker_logdir_root='%s/%s/parsl_scripts/logs' % (homeroot, user),
