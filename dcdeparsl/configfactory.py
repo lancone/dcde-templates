@@ -32,7 +32,8 @@ class ConfigFactory(object):
             self.log.warning("external ip lookup failed. ")
         
         self.ipaddress = socket.gethostbyname(self.clienthostname)    
-        self.log.debug("ConfigFactory created.")
+        self.log.debug("ConfigFactory created. clienthostname=%s external_ip=%s" % (self.clienthostname, 
+                                                                                    self.external_ip))
 
     def getconfig(self, endpoint, user):
         '''
@@ -46,6 +47,18 @@ class ConfigFactory(object):
         channel_port = int(self.config.get(endpoint, 'channel_port') )
         scheduler_options = self.config.get(endpoint, 'scheduler_options')
         batch = self.config.get(endpoint, 'batch')
+
+        self.log.debug("Got channel parameters: endpoint=%s user=%s channel_port=%s script_dir=%s homeroot=%s " % (endpoint, 
+                                                                                                                   user, 
+                                                                                                                   channel_port, 
+                                                                                                                   homeroot))
+        self.log.debug("Got provider parameters: batch=%s scheduler_options=%s worker_init=%s " % (batch,
+                                                                                                   scheduler_options,
+                                                                                                   worker_init))
+        
+        self.log.debug("Got executor parameters: port_high=%s port_low=%s " % (worker_port_range_low, 
+                                                                               worker_port_range_high,
+                                                                               ))
         
         config = None
         myprovider = None
