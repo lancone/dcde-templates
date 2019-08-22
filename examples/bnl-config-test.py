@@ -80,7 +80,8 @@ if __name__ == '__main__':
   
     # Must. wait. for. job. to. finish.
     result = worker_info().result()
-    print("worker output is: %s" % result)
+    print(result)
+    print("result type: %s" % type(result))
     
     logging.info("got result, printing...")
 
