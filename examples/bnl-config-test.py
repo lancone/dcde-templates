@@ -76,12 +76,10 @@ if __name__ == '__main__':
     parsl.load(bnl_sdcc_condor)
 
     logging.info("submitting...")
-    sdcc_wninfo = worker_info()
-    
-    logging.info("awaiting result....")
-    
+  
+  
     # Must. wait. for. job. to. finish.
-    result = sdcc_wninfo().result()
+    result = worker_info().result()
     print(result)
     
     logging.info("got result, printing...")
