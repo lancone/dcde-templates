@@ -57,7 +57,7 @@ class ConfigFactory(object):
                                                                                                    scheduler_options,
                                                                                                    worker_init))
         
-        self.log.debug("Got executor parameters: port_high=%s port_low=%s " % (worker_port_range_low, 
+        self.log.debug("Got executor parameters: port_low=%s port_high=%s " % (worker_port_range_low, 
                                                                                worker_port_range_high,
                                                                                ))
         
