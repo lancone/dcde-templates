@@ -14,7 +14,7 @@ from parsl.providers.condor.condor import CondorProvider
 from parsl.config import Config
 from parsl.executors import HighThroughputExecutor
 from parsl.app.app import python_app, bash_app
-import urllib2
+import requests
 
 class ConfigFactory(object):
 
@@ -24,13 +24,14 @@ class ConfigFactory(object):
         self.config = configparser.ConfigParser()
         self.config.read(self.conffile)
         self.clienthostname = socket.gethostname()
-        try:            
-            self.external_ip = urllib2.urlopen('http://whatismyip.org').read()
+        try:
+            f = requests.request('GET', 'http://whatismyip.org')            
+            self.external_ip = f.text
+            # urllib2.urlopen('http://whatismyip.org').read()
         except:
             self.log.warning("external ip lookup failed. ")
         
         self.ipaddress = socket.gethostbyname(self.clienthostname)    
-
         self.log.debug("ConfigFactory created.")
 
     def getconfig(self, endpoint, user):
