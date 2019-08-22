@@ -50,7 +50,8 @@ class ConfigFactory(object):
 
         self.log.debug("Got channel parameters: endpoint=%s user=%s channel_port=%s script_dir=%s homeroot=%s " % (endpoint, 
                                                                                                                    user, 
-                                                                                                                   channel_port, 
+                                                                                                                   channel_port,
+                                                                                                                   '%s/%s/parsl_scripts'% (homeroot, user),
                                                                                                                    homeroot))
         self.log.debug("Got provider parameters: batch=%s scheduler_options=%s worker_init=%s " % (batch,
                                                                                                    scheduler_options,
