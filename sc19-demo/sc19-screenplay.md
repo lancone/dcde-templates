@@ -1,0 +1,173 @@
+# DCDE Relion demo screenplay
+
+## Planned SC19 DCDE PARSL demo
+
+### The setup
+
+This is will be a live demo to be performed at the Department of Energy Exhibition booth at the Supercomputing 2019 conference.  The demo will  feature the DCDE single sign-on scheme, with Jupyter notebooks and PARSL middleware being used to access remote HPC resources
+
+### The players
+The client and controlling machine will be `jupyter05.sdcc.bnl.gov`.  
+  * Jupyter notebook pages will:
+    * Transfer Data to and from compute clusters and/or Globus endpoints (Globus or oauth-ssh SCP)
+    * Submit batch jobs to compute clusters
+    * Visualize output data from the batch jobs
+  * Compute resources:  
+    * Argonne cluster:  via `gsissh.lcrc.anl.gov`
+    * Brookhaven Cluster via  `spce01.sdcc.bnl.gov`
+    * ORNL Cluster via `dcde-ext.ornl.gov`
+  * Globus endpoints:
+    * `mscdtn.emsl.pnl.gov`?
+    * `globus02.sdcc.bnl.gov`
+  * Applications
+    * `Relion` run in batch jobs on the DCDE compute resources
+    * `Singularity`
+    * `Globus` to sync directories between compute resources
+    * `Nglview` to visualize results in the jupyter notebook page.
+    * ~~Chimera (/Applications/Chimera.app/Contents/MacOS/chimera)~~
+
+### Preparatory work
+  * Verify oauth-ssh works from jupyter05 to:
+    * spce01.sdcc.bnl.gov
+    * gssh.lcrc.anl.gov
+    * dcde-ext.ornl.gov
+    * dcde.lbl.gov
+  * Verify PARSL on each compute resource can:
+     1. Run a `uname`- style command on a batch node and return output to the parsl client on `jupyter05`    
+     2. Run a trivial relion job in a singularity container and return output to the parsl client on `jupyter05`    
+  * Verify Globus transfer operations work between endpoints at:
+    * ANL <-> BNL
+    * ORNL <-> BNL
+    * LBNL <-> BNL?
+  * Pre-stage input data (Relion tutorial data set) to all participating compute site
+
+### Demo Steps:
+
+  1. Log into `jupyter05.sdcc.bnl.gov` with DCDE account
+  1. Submit Job A to Lab A
+  1. Sync output of Job A back to jupyter05
+  1. Visualize output of Job A on Jupyter05
+  1. Sync new data from job A out to Lab B (input to next job)
+  1. Submit Job B to Lab B
+  1. Sync output of Job B back to jupyter05
+  1. Visualize output of job B on Jupyter05
+  1. Sync new data from job B out to Lab C (input to next job)
+  1. Submit Job C to Lab C
+  1. Sync output of Job C back to jupyter05
+  1. Visualize output of job C on Jupyter05
+
+
+# SC19 material ends here
+
+## Remnants of April teleconference demo:
+
+### The players
+* client machine at pnnl
+* Argonne cluster:  `gsissh gsissh.lcrc.anl.gov` (seems to not be working as of 4/10/19)
+* Brookhaven Cluster   `gsissh -p 2222 spce01.sdcc.bnl.gov`
+* ORNL Cluster `gsissh -p 2222 dcde1000006@dcde-ext.ornl.gov`
+* Chimera ` /Applications/Chimera.app/Contents/MacOS/chimera`
+
+## The setup
+
+This is a real live demo of real science application running at two sites (Argonne, Brookhaven) with visualization being done on my desktop Mac here at pnnl.
+
+It builds on the work already done by John and Daniel to setup ID Management and gsissh at their sites, plus Ketan's work to build an application container to help with portability.
+
+  * Refer to John's Dan's work getting COManage set up to map cert ID's to Linux accounts at the various sites
+  * CIlogon certificate obtained via Argonne collaborator account  (PNNL is not ready for CILogon/InCommon)
+  * Show certificate PEM file
+  * start container, do grid-proxy-init
+  * ready to
+
+### About the computing
+
+Cryo-Electron Microscopy is an experimental technique that can be used to determine atomic structure of biomolecules such as proteins.  The molecules are suspended in water and flash frozen into amorphous ice.  Then they are imaged with transmission electron Microscopy.  The data sets can be very large (multiple terabytes) and require extensive processing to construct 3D models of the molecule(s) present in the sample.
+
+We use the relion application, which can be run on many different types of compute platforms, including HPC clusters and GPGPU-based machines.  We will see a few computational steps of a multi-step  pipeline demonstrated today
+
+### The demo
+
+The demo is staged from my Macbook in the `~/dcde` directory.  It contains selected directories and files in it:
+
+I have a docker container that has gsissh client and a few other useful tools inside it:
+
+ * dcde-gsi.sh        A handy script that fires up DCDE docker client shell
+ * dcde-relion-demo   Working directory for staging files for the demo
+ * relion21_tutorial  Data files for the relion demo, including precalculated data
+ * scripts            Utility scripts for the demo
+
+## Input Data
+Movies are in  `Micrographs/Falcon_2012_06_12-*movie.mrcs` and they really don't look like anything
+
+
+## Enter the shell in the container
+
+```
+WE35271:dcde d3c724$ cd ~/dcde
+WE35271:dcde d3c724$ ./dcde-gsi.sh
+gsissh-45764
+[dcde@73b2df2749f7 ~]$
+```
+
+## Run 3D Classification at ANL:
+
+```
+[dcowley@beboplogin5 ~]$ sbatch < run-3d-class-dcde.sbatch ; watch showq -u dcowley
+
+[dcowley@beboplogin5 875970]$ squeue -u dcowley
+JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
+876982    bdwall relion-3  dcowley  R       0:19      4 bdw-[0161-0164]
+
+[dcowley@beboplogin5 dcde]$ tail -f  relion-3d-refine.876982.bdw-0161.out
+```
+
+## While  Argonne job runs
+
+### show input movie frames on cascade
+
+`relion_display --i  Micrographs/Falcon_2012_06_12-14_57_34_0_movie.mrcs ``
+
+
+### Show particles from 2D classification(?)  on Cascade
+
+
+```
+relion_display  --i Select/after_sorting/particles.star
+```
+
+
+## Pull data back from ANL:
+```
+[dcde@d2abd7b78f83 ~]$ ./scripts/anl-pull.sh
+```
+
+## Show files from  
+  * Cascade:  `relion_display --i  Class3D/first_exhaustive/run_it004_class00?.mrc`
+  * ANL run: `<chimera> dcde-relion-demo/3dClassify/dcde/875970/*.mrc`
+
+## Run (something) at ORNL if they become live:
+
+## Run PostProcessing at BNL:
+
+```
+Wed Jan 30 18:04:40 EST 2019
+-bash-4.2$
+-bash-4.2$ cd ~/dcde-relion-demo/PostProcess/
+-bash-4.2$ pwd
+/usatlas/grid/dcde1000006/dcde-relion-demo/PostProcess
+-bash-4.2$ condor_submit ~/relion-bnl-demo.jdl ; watch condor_q
+```
+
+## Pull bnl files back via rsync:
+
+```
+[dcde@fac9eee44f32 ~]$ scripts/bnl-pull.sh
+~/dcde-relion-demo ~
+receiving incremental file list
+./
+```
+
+## Show files from BNL in Chimera
+
+ `/Applications/Chimera.app/Contents/MacOS/chimera dcde-relion-demo/3dClassify/dcde/875970/class3d_it004_class002.mrc`
