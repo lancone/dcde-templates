@@ -39,6 +39,7 @@ The client and controlling machine will be `jupyter05.sdcc.bnl.gov`.
     * ANL <-> BNL
     * ORNL <-> BNL
     * LBNL <-> BNL?
+  * Install `nglview` (https://github.com/arose/nglview) on `jupyter05` 
   * Pre-stage input data (Relion tutorial data set) to all participating compute site
 
 ### Demo Steps:
