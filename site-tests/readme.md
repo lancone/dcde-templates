@@ -12,7 +12,10 @@ are many obstacles: sites block ports incoming and outgoing for a variety of
 reasons, so network and firewall configs and these parsl configs need to be
 aligned so the data can thread the needle(s) to the remote sites and back.
 
-All of these tests use the parsl HighThroughputExecutor, which sets up an "interchange" on the local machine (i.e. the BNL jupyterhub) to communicate with the (remote) compute cluster to submit jobs and pass the results back.  This model with a local interchange may not be the best way for DCDE to use parsl.  Yadu Babuji of the parsl team has suggested we might want to use the remote_executor branch of the parsl codebase.
+All of these tests use the parsl HighThroughputExecutor, which sets up an "interchange" on the local machine (i.e. the BNL jupyterhub) to communicate with the (remote) compute cluster to submit jobs and pass the results back.  This
+local interchange mode may not be the best way for DCDE to use parsl. Yadu
+Babuji of the parsl team has suggested we might want to use the remote_executor
+branch of the parsl codebase.
 
 Yadu's comment from Slack this morning:
 
