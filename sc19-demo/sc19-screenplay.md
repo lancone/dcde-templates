@@ -1,6 +1,15 @@
 # DCDE Relion demo screenplay
 
+
 ## Planned SC19 DCDE PARSL demo
+
+### Topics
+  * prerequisites
+  * recipes, templates
+  * lessons learned
+  * components we're using
+  * Participants
+  * Live demo
 
 ### The setup
 
