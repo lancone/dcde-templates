@@ -55,6 +55,7 @@ The client and controlling machine will be `jupyter05.sdcc.bnl.gov`.
 
 ### Demo Steps:
 
+  1. How to get an account
   1. Log into `jupyter05.sdcc.bnl.gov` with DCDE account
   1. Submit Job A to Lab A
   1. Sync output of Job A back to jupyter05
