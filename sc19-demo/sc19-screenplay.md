@@ -9,6 +9,7 @@
   * lessons learned
   * components we're using
   * Participants
+  * How accounts are created
   * Live demo
 
 ### The setup
@@ -50,6 +51,7 @@ The client and controlling machine will be `jupyter05.sdcc.bnl.gov`.
     * LBNL <-> BNL?
   * Install `nglview` (https://github.com/arose/nglview) on `jupyter05`
   * Pre-stage input data (Relion tutorial data set) to all participating compute site
+  * Make sure reservations are avaiable on compute resources for immediate job turnaround
 
 ### Demo Steps:
 
